@@ -9,7 +9,7 @@ from tqdm import tqdm
 # The path to your dataset. This is now both the input and output directory.
 DATA_PATH = "../data/raw/faces" 
 # The target number of images for each person after augmentation.
-TARGET_IMAGES_PER_PERSON = 500 
+TARGET_IMAGES_PER_PERSON = 1000
 # --- END CONFIGURATION ---
 
 # Define the series of augmentations to apply.
@@ -72,7 +72,7 @@ def augment_dataset(people_to_augment=None):
             augmented_image = cv2.cvtColor(augmented_image, cv2.COLOR_RGB2BGR)
             
             # Save the new image in the same directory with a new name
-            new_image_name = f"{person_name}_augmented_{num_originals + generated_count}.jpg"
+            new_image_name = f"{person_name}_augmented_{num_originals + generated_count}.png"
             cv2.imwrite(os.path.join(person_dir, new_image_name), augmented_image)
             
             generated_count += 1
