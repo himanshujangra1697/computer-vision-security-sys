@@ -14,5 +14,5 @@ venv/
 
 # Data - We only track code, not large data files
 data/
-*.pkl
+# *.pkl
 *.h5
