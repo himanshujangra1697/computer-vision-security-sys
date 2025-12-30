@@ -131,7 +131,8 @@ while True:
             print(f"Surveillance Event -> ID: '{label}' (Raw: {final_name}), Confidence: {score:.2f}")
 
             cv2.rectangle(draw_frame, (x, y), (x+w, y+h), color, 2)
-            cv2.putText(draw_frame, f"{label} ({score:.2f})", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+            cv2.putText(draw_frame, f"{label}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+            # cv2.putText(draw_frame, f"{label} ({score:.2f})", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
 
     except Exception as e:
         print(f"⚠️ Error in loop: {e}")
