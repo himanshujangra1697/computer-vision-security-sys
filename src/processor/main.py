@@ -9,7 +9,9 @@ from tracker_utils import MultiFaceTracker
 
 # --- CONFIG ---
 BLUR_THRESHOLD = 50   # Adjust based on your camera (Lower = allow more blur)
-CONFIDENCE_THRESHOLD = 0.80 # Strict confidence required
+ML_THRESHOLD = 0.65 # Strict confidence required (probability from SVM)
+COSINE_THRESHOLD = 0.600  # Similarity threshold for Best-Match Gate
+# ----------------
 
 # --- SETUP ---
 print("--- STARTING PRODUCTION SYSTEM ---")
@@ -26,10 +28,11 @@ face_classifier = FaceClassifier()
 face_classifier.train(face_db)
 # -----------------------------------------------
 
-if cv2.VideoCapture(1):
-    cap = cv2.VideoCapture(1)
-else:
-    cap = cv2.VideoCapture(0)
+# if cv2.VideoCapture(1):
+#     cap = cv2.VideoCapture(1)
+# else:
+#     cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)       # added for webcam input
 if not cap.isOpened():
     print("❌ Error: Cannot open webcam.")
     exit()
@@ -100,17 +103,16 @@ while True:
             
             # --- 3. PREDICT ---
             embedding = obj["embedding"]
-            name, score = face_classifier.predict(embedding, gate_threshold=0.30)
+            name, score = face_classifier.predict(embedding, cosine_threshold=COSINE_THRESHOLD, ml_threshold=ML_THRESHOLD)
             
-            # --- 4. CONFIDENCE GATE ---
-            # Even if SVM says "Himanshu", if prob is 55%, treat as Unknown
-            if score < CONFIDENCE_THRESHOLD:
-                final_name = "Unknown"
-            else:
-                final_name = name
+            final_name = name
+
+            # If the model thinks it's the wall/background, treat as Unknown
+            if name == "background":
+                final_name = "Unknown (Background)"
 
             # Store in list
-            current_faces_data.append((x, y, w, h, name, score))
+            current_faces_data.append((x, y, w, h, final_name, score))
 
         # 4. TRACK & STABILIZE (The Magic Step)
         # The tracker sorts out which name belongs to which face location
@@ -119,14 +121,14 @@ while True:
         # 5. DRAW FINAL RESULTS
         for (x, y, w, h, stable_name, score) in stable_faces:            
             # --- 6. DISPLAY LOGIC ---
-            if (stable_name == "Unknown") or (stable_name == "background"):
+            if (stable_name == "Unknown") or (stable_name == "background") or (stable_name == "Unknown (Background)"):
                 color = (0, 0, 255) # Red for Unknown
                 label = "UNKNOWN"
             else:
                 color = (0, 255, 0) # Green for Known
                 label = stable_name.upper()
 
-            print(f"Surveillance Event -> ID: '{label}' (Raw: {stable_name}), Confidence: {score:.2f}")
+            print(f"Surveillance Event -> ID: '{label}' (Raw: {final_name}), Confidence: {score:.2f}")
 
             cv2.rectangle(draw_frame, (x, y), (x+w, y+h), color, 2)
             cv2.putText(draw_frame, f"{label} ({score:.2f})", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
