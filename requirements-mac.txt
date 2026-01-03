@@ -1,0 +1,13 @@
+# Core Framework (Apple Silicon Optimized)
+tensorflow-macos==2.15.0
+tensorflow-metal==1.1.0
+
+# Legacy Keras Bridge (Required by DeepFace/RetinaFace)
+tf-keras
+
+# Computer Vision & Machine Learning
+deepface
+opencv-python
+scikit-learn
+numpy
+pandas

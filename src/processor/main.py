@@ -1,16 +1,53 @@
 import cv2
 import pickle
 import traceback
+import platform
+import sys
+import tensorflow as tf
 from deepface import DeepFace
 from classifier_svm_utils import FaceClassifier
-from tracker_utils import FaceTracker
 from tracker_utils import MultiFaceTracker
 
+# --- 1. ROBUST CROSS-PLATFORM GPU SETUP ---
+# This block handles the differences between Mac M-Chips and Windows NVIDIA
+print(f"🖥️  System: {platform.system()} | Processor: {platform.machine()}")
+print(f"TensorFlow Version: {tf.__version__}")
+
+gpus = tf.config.list_physical_devices('GPU')
+
+if platform.system() == 'Darwin':
+    # --- MAC OS (M1/M2/M3/M4) ---
+    if gpus:
+        print(f"✅ Apple Metal GPU Enabled: {len(gpus)} GPU(s)")
+        # Metal manages memory automatically, so we don't need set_memory_growth
+    else:
+        print("⚠️  No GPU detected on Mac.")
+        print("   -> Run: pip install tensorflow-metal")
+
+elif platform.system() == 'Windows':
+    # --- WINDOWS ---
+    if gpus:
+        try:
+            # specific optimization to prevent locking all VRAM
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            print(f"✅ Windows NVIDIA GPU Enabled: {len(gpus)} GPU(s)")
+        except RuntimeError as e:
+            print(f"❌ GPU Error: {e}")
+    else:
+        print("⚠️  No GPU detected on Windows.")
+        print("   -> Ensure you installed TensorFlow 2.10 and CUDA 11.2")
+
+else:
+    # --- LINUX / OTHER ---
+    if gpus:
+        print(f"✅ Linux GPU Enabled: {len(gpus)} GPU(s)")
+# -----------------------------------------------------------
 
 # --- CONFIG ---
-BLUR_THRESHOLD = 50   # Adjust based on your camera (Lower = allow more blur)
-ML_THRESHOLD = 0.65 # Strict confidence required (probability from SVM)
-COSINE_THRESHOLD = 0.600  # Similarity threshold for Best-Match Gate
+BLUR_THRESHOLD = 50
+ML_THRESHOLD = 0.65
+COSINE_THRESHOLD = 0.600
 # ----------------
 
 # --- SETUP ---
@@ -26,16 +63,14 @@ except FileNotFoundError:
 # --- Initialize and Train the Classifier ---
 face_classifier = FaceClassifier()
 face_classifier.train(face_db)
-# -----------------------------------------------
 
-# if cv2.VideoCapture(1):
-#     cap = cv2.VideoCapture(1)
-# else:
-#     cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture(0)       # added for webcam input
-if not cap.isOpened():
-    print("❌ Error: Cannot open webcam.")
-    exit()
+# --- CROSS-PLATFORM CAMERA SETUP ---
+# Keep this logic! It is crucial for Windows performance.
+if platform.system() == 'Windows':
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Faster on Windows
+else:
+    cap = cv2.VideoCapture(0) # Standard for Mac (AVFoundation)
+# -----------------------------------
 
 # Initialize the Stabilizer
 tracker = MultiFaceTracker()
@@ -86,8 +121,11 @@ while True:
         for obj in embedding_objs:
             # Check if this is a "dummy" detection (DeepFace sometimes returns full image if no face found)
             facial_area = obj["facial_area"]
-            x, y, w, h = facial_area.values()
-
+            # x, y, w, h = facial_area.values()
+            x = facial_area['x']
+            y = facial_area['y']
+            w = facial_area['w']
+            h = facial_area['h']
             # If the box is the size of the whole screen, it's a false detection
             if w > frame.shape[1] * 0.9: continue
 
