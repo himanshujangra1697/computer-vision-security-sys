@@ -4,6 +4,7 @@
 tqdm
 albumentations
 cmake
+uvicorn[standard]
 fastapi[all] ; sys_platform == 'darwin' 
 # (Note: Windows has a specific version below, Mac gets latest)
 
