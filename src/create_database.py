@@ -10,7 +10,7 @@ from deepface import DeepFace
 DATA_PATH = "../data/raw/faces"
 OUTPUT_PATH = "processor/face_embeddings.pkl"
 MODEL_NAME = "ArcFace"
-GALLERY_SIZE = 973
+GALLERY_SIZE = 1000
 # -------------------
 
 def create_embedding_database():

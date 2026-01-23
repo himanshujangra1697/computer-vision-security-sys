@@ -14,6 +14,7 @@ venv_test/
 .vscode/
 
 # Data - We only track code, not large data files
-data/
+data/raw/actions/
+data/raw/faces/*
 *.pkl
 *.h5

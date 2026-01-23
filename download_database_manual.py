@@ -51,7 +51,7 @@ def extract_images(source_folder, destination_folder):
 # Mac/Linux Example: "/Users/Name/Downloads/SourceData"
 
 src_dir = r"C:\Users\himan\Downloads\imga\lfw-funneled\lfw_funneled"
-dest_dir = r"C:\Users\himan\Documents\Projects\computer_vision_security_system\dev\computer-vision-security-sys\data\raw\background"
+dest_dir = r"<REST OF THE PATH>\computer-vision-security-sys\data\raw\background"
 
 # Run the function
 if __name__ == "__main__":
