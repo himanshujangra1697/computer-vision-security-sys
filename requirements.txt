@@ -23,6 +23,8 @@ mediapipe==0.10.7       ; sys_platform == 'win32'
 deepface==0.0.79        ; sys_platform == 'win32'
 retina-face==0.0.13     ; sys_platform == 'win32'
 dlib                    ; sys_platform == 'win32'
+serial==0.0.97          ; sys_platform == 'win32'
+watchdog==4.0.0         ; sys_platform == 'win32'
 
 # Data & Cloud (Pinned versions)
 pandas==2.1.1               ; sys_platform == 'win32'

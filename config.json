@@ -1,0 +1,18 @@
+{
+    "HARDWARE": {
+        "ENABLE_RELAY": true,
+        "COM_PORT": "COM3",
+        "BAUD_RATE": 9600,
+        "UNLOCK_HOLD_TIME_SEC": 3
+    },
+    "INTENT_THRESHOLDS": {
+        "MIN_AREA": 45000,
+        "MAX_X_VARIANCE": 40.0,
+        "HISTORY_FRAMES": 5
+    },
+    "RECOGNITION": {
+        "BLUR_THRESHOLD": 50,
+        "ML_THRESHOLD": 0.65,
+        "COSINE_THRESHOLD": 0.600
+    }
+}
