@@ -46,8 +46,8 @@ else:
 
 # --- CONFIG ---
 BLUR_THRESHOLD = 50
-ML_THRESHOLD = 0.65
-COSINE_THRESHOLD = 0.600
+ML_THRESHOLD = 0.60
+COSINE_THRESHOLD = 0.550
 # ----------------
 
 # --- SETUP ---
@@ -69,7 +69,7 @@ face_classifier.train(face_db)
 if platform.system() == 'Windows':
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Faster on Windows
 else:
-    cap = cv2.VideoCapture(0) # Standard for Mac (AVFoundation)
+    cap = cv2.VideoCapture(1) # Standard for Mac (AVFoundation)
 # -----------------------------------
 
 # Initialize the Stabilizer

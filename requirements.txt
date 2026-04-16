@@ -4,7 +4,7 @@
 tqdm
 albumentations
 cmake
-fastapi[all] ; sys_platform == 'darwin' 
+fastapi[all] ; sys_platform == 'darwin'
 # (Note: Windows has a specific version below, Mac gets latest)
 
 # ==========================================
